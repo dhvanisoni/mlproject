@@ -1,5 +1,4 @@
 import sys
-import os 
 from src.logger import logging
 
 def error_message_detail(error,error_detail:sys):
@@ -44,7 +43,7 @@ class CustomeException(Exception):
          #Call the base class constructor
          super().__init__(error_message)
          #Generate a detailed error message using the helper function
-         self.error_message=error_message_detail(error_message, errerror_detail = error_detail)
+         self.error_message=error_message_detail(error_message, error_detail = error_detail)
 
     def __str__(self):
          """
