@@ -11,8 +11,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from dataclasses import dataclass
 
-
-
 @dataclass 
 class DataTransformationConfig:
     preprocessor_obj_file_path: str=os.path.join('artifacts','preprocessor.pkl')
@@ -102,8 +100,7 @@ class DataTransformation:
                 test_arr, 
                 self.transformation_config.preprocessor_obj_file_path
             )
-
-                
+        
         except Exception as e:
             raise CustomeException(e,sys)
 
