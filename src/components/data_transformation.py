@@ -94,9 +94,6 @@ class DataTransformation:
             input_features_train_arr = preprocess_obj.fit_transform(input_feature_train_df)
             input_features_test_arr = preprocess_obj.transform(input_feature_test_df)
 
-            # train_arr = np.c_[input_features_train_arr, np.array(input_feature_train_df)]
-            # test_arr = np.c_[input_features_test_arr, np.array(input_feature_test_df)]
-
             # Combine processed inputs and target variable
             train_arr = np.c_[input_features_train_arr, np.array(target_train_df)]
             test_arr = np.c_[input_features_test_arr, np.array(target_test_df)]
