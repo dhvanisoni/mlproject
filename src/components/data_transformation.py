@@ -12,11 +12,9 @@ from sklearn.pipeline import Pipeline
 from dataclasses import dataclass
 
 
-
 @dataclass 
 class DataTransformationConfig:
-    preprocessor_obj_file_path: str=os.path.join('artifacts','preprocessor.pkl')
-
+    preprocessor_obj_file_path =os.path.join('artifacts','preprocessor.pkl')
 
 class DataTransformation:
     def __init__(self):
@@ -32,33 +30,35 @@ class DataTransformation:
                 "parental_level_of_education",
                 "lunch",
                 "test_preparation_course",
-            ] 
+            ]
             
             num_pipeline = Pipeline(
                 steps = [
                     ("imputer", SimpleImputer(strategy="median")),
-                    ("std_scaler", StandardScaler(with_mean=False))
+                    ("std_scaler", StandardScaler())
                 ]
 
             )
             cat_pipeline = Pipeline(
                 steps = [
                     ("imputer", SimpleImputer(strategy="most_frequent")),
-                    ('onehot', OneHotEncoder()),
-                    ('std_scaler', StandardScaler(with_mean=False))    
+                    ("one_hot_encoder",OneHotEncoder()),
+                    # ('std_scaler', StandardScaler(with_mean=False))    
                 ]
             )
-            logging.info('Created numerical pipelines')
+            
+            logging.info(f"Categorical columns: {categorical_columns}")
+            logging.info(f"Numerical columns: {numerical_columns}")
 
-            logging.info('Created categorical pipelines')
 
             # combine numerical pipeline and categorical pipeline
-            preprocessor = ColumnTransformer(
-                transformers = [
-                    ("numerical_pipeline", num_pipeline, numerical_columns), 
-                    ("categorical_pipeline", cat_pipeline, categorical_columns)
-                ]
-            )
+            preprocessor=ColumnTransformer(
+                [
+                    ("num_pipeline",num_pipeline,numerical_columns),
+                    ("cat_pipelines",cat_pipeline,categorical_columns)
+
+                ] 
+                    )
 
             return preprocessor
 
@@ -69,6 +69,7 @@ class DataTransformation:
         try:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
+
             logging.info('Read the train and test data as dataframes')
 
             logging.info('Objtaining preprocessor objects')
@@ -79,17 +80,23 @@ class DataTransformation:
             target_column = 'math_score'
             numerical_columns = ["writing_score", "reading_score"]
 
+
             input_feature_train_df = train_df.drop(columns=[target_column], axis=1)
             target_train_df = train_df[target_column]
 
             input_feature_test_df = test_df.drop(columns=[target_column], axis=1)
             target_test_df = test_df[target_column]
 
+            # Apply preprocessing
             input_features_train_arr = preprocess_obj.fit_transform(input_feature_train_df)
             input_features_test_arr = preprocess_obj.transform(input_feature_test_df)
 
-            train_arr = np.c_[input_features_train_arr, np.array(input_feature_train_df)]
-            test_arr = np.c_[input_features_test_arr, np.array(input_feature_test_df)]
+            # train_arr = np.c_[input_features_train_arr, np.array(input_feature_train_df)]
+            # test_arr = np.c_[input_features_test_arr, np.array(input_feature_test_df)]
+
+            # Combine processed inputs and target variable
+            train_arr = np.c_[input_features_train_arr, np.array(target_train_df)]
+            test_arr = np.c_[input_features_test_arr, np.array(target_test_df)]
 
             logging.info(f'saved preprocessing object')
 
@@ -102,12 +109,9 @@ class DataTransformation:
                 test_arr, 
                 self.transformation_config.preprocessor_obj_file_path
             )
-
                 
         except Exception as e:
             raise CustomeException(e,sys)
 
 
         
-
-
