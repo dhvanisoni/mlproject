@@ -75,6 +75,12 @@ class ModelTrainer:
                 },
                 "LinearRegression":{},
 
+                "KNeighboursRegressor":{
+                    'n_neighbors':[3,5,7,9],
+                    'weights':['uniform','distance'],
+                    'algorithm':['auto', 'ball_tree', 'kd_tree', 'brute']
+                },
+
                 "XGBRegressor":{
                     'learning_rate':[.1,.01,.05,.001],
                     'n_estimators': [8,16,32,64,128,256]
